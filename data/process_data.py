@@ -49,6 +49,9 @@ def clean_data(df):
     df = pd.concat([df, categories], axis=1)
     #drop duplicates
     df = df.drop_duplicates()
+    #change values bigger than 1 to 1
+    df['related']=df['related'].map(lambda x: 1 if x == 2 else x)
+    
     print(df.head())
     return df
 
