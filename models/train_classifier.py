@@ -42,8 +42,6 @@ def load_data(database_filepath):
     #fill empty spaces with 0
     df = df.fillna(0)
     
-    #change values bigger than 1 to 1
-    df['related']=df['related'].map(lambda x: 1 if x == 2 else x)
     X = df['message']
     y = df.iloc[:,4:]
     column_names = y.columns.tolist()
@@ -173,8 +171,8 @@ class AdditionalFeatureExtractor(BaseEstimator, TransformerMixin):
        Output:
        additional_features - array with number of '@' signs in every row
        """
-        additional_features = np.array([text.count('@') for text in X])
-        return additional_features.reshape(-1, 1)
+       additional_features = np.array([text.count('@') for text in X])
+       return additional_features.reshape(-1, 1)
     
 def tokenize(text):    
     """
@@ -218,15 +216,16 @@ def build_model():
         ])),
 
         ('classifier', MultiOutputClassifier(RandomForestClassifier()))
+        #('classifier', RandomForestClassifier())
         ])
     
     #specify parameters    
     parameters = { 
-    'classifier__estimator__n_estimators': [10,20,50],
-    'classifier__estimator__max_depth' : [2,3,5,8],
-    'classifier__estimator__random_state': [0],
-    'classifier__estimator__min_samples_split': [2, 5],
-    }
+     'classifier__estimator__n_estimators': [10,20,50],
+     'classifier__estimator__max_depth' : [2,3,5,8],
+     'classifier__estimator__random_state': [0],
+     'classifier__estimator__min_samples_split': [2, 5],
+     }
 
     model = GridSearchCV(pipeline, param_grid=parameters, cv=2, n_jobs=1, verbose=2) 
     return model
@@ -247,6 +246,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     """
     predicted_gs = model.predict(X_test)
     class_report2 = classification_report(Y_test, predicted_gs, target_names=category_names)
+    print(class_report2)
     return class_report2
 
 
